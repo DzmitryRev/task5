@@ -1,13 +1,22 @@
 import React, { useEffect, useState } from "react";
 import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
-import { Box, Button, MenuItem, Select, SelectChangeEvent, TextField } from "@mui/material";
+import {
+  Box,
+  Button,
+  Divider,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
+  TextField,
+} from "@mui/material";
 import { darkTheme, lightTheme } from "./styles/themes";
 import Header from "./components/Header";
 import DenseTable from "./components/DenseTable";
 import { SupportedLocalesType, SUPPORTED_LOCALES } from "./const/locales";
 import { generateTableData } from "./services/generateTableDataService";
 import { ITableData } from "./models/TableDataModel";
+import { useInView } from "react-intersection-observer";
 
 function App() {
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -15,6 +24,14 @@ function App() {
   const [locale, setLocale] = useState<SupportedLocalesType>("ru");
   const [page, setPage] = useState<number>(1);
   const [seed, setSeed] = useState<string>("");
+  const { ref, inView } = useInView();
+
+  useEffect(() => {
+    console.log(inView);
+    if (inView) {
+      loadMoreTableItems();
+    }
+  }, [inView]);
 
   useEffect(() => {
     setPage(1);
@@ -74,6 +91,7 @@ function App() {
         <Button onClick={loadMoreTableItems}>Load more</Button>
         <Box sx={{ py: 3 }}>
           <DenseTable tableData={tableData} />
+          <Divider ref={ref} />
         </Box>
       </Box>
     </ThemeProvider>
