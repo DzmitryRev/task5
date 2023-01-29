@@ -14,9 +14,7 @@ export default function Header({ changeTheme }: IHeaderProps) {
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
-        px: 5,
         py: 2,
-        mb: 3,
       }}
     >
       <Typography variant="h6">Random users app</Typography>
