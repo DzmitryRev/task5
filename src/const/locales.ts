@@ -1,4 +1,3 @@
-
 /**
  * if you want to add new locale to you app - just add it in SUPPORTED_LOCALES
  * if UsableLocale don't support value from SUPPORTED_LOCALES const -
@@ -12,3 +11,5 @@ export type ElementType<T extends ReadonlyArray<unknown>> = T extends ReadonlyAr
 >
   ? ElementType
   : never;
+
+export type SupportedLocalesType = ElementType<typeof SUPPORTED_LOCALES>;
