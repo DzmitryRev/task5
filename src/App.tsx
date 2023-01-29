@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
-import { Box, MenuItem, Select, SelectChangeEvent } from "@mui/material";
+import { Box, Button, MenuItem, Select, SelectChangeEvent, TextField } from "@mui/material";
 import { darkTheme, lightTheme } from "./styles/themes";
 import Header from "./components/Header";
 import DenseTable from "./components/DenseTable";
@@ -13,16 +13,33 @@ function App() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [tableData, setTableData] = useState<ITableData[]>([]);
   const [locale, setLocale] = useState<SupportedLocalesType>("ru");
+  const [page, setPage] = useState<number>(1);
+  const [seed, setSeed] = useState<string>("");
 
   useEffect(() => {
-    setTableData(generateTableData(locale));
-  }, [locale]);
+    setPage(1);
+    setTableData(generateTableData(locale, 1, seed));
+  }, [seed, locale]);
+
+  const loadMoreTableItems = () => {
+    setTableData((prev) => {
+      let loadedTableData = generateTableData(locale, page + 1, seed);
+      if (JSON.stringify(prev) !== JSON.stringify(loadedTableData)) {
+        setPage(page + 1);
+        return [...prev, ...loadedTableData];
+      }
+      return [...prev];
+    });
+  };
 
   const changeTheme = () => {
     setIsDarkMode((previousValue) => !previousValue);
   };
   const changeLocale = (e: SelectChangeEvent<SupportedLocalesType>) => {
     setLocale(e.target.value as SupportedLocalesType);
+  };
+  const changeSeed = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSeed(e.target.value);
   };
 
   return (
@@ -32,16 +49,29 @@ function App() {
         <Header changeTheme={changeTheme} />
         <Box sx={{ pt: 3 }}>
           <Select
+            sx={{ mr: 2 }}
             labelId="demo-simple-select-label"
             id="demo-simple-select"
             value={locale}
             onChange={changeLocale}
           >
             {SUPPORTED_LOCALES.map((item) => {
-              return <MenuItem value={item}>{item}</MenuItem>;
+              return (
+                <MenuItem key={item} value={item}>
+                  {item}
+                </MenuItem>
+              );
             })}
           </Select>
+          <TextField
+            id="outlined-basic"
+            label="Seed"
+            variant="outlined"
+            value={seed}
+            onChange={changeSeed}
+          />
         </Box>
+        <Button onClick={loadMoreTableItems}>Load more</Button>
         <Box sx={{ py: 3 }}>
           <DenseTable tableData={tableData} />
         </Box>
