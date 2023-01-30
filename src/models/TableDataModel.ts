@@ -1,5 +1,5 @@
 export interface ITableData {
-  serial: number;
+  serial: string;
   id: string;
   fullname: string;
   adress: string;

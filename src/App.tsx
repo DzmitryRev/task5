@@ -8,6 +8,7 @@ import {
   MenuItem,
   Select,
   SelectChangeEvent,
+  Slider,
   TextField,
 } from "@mui/material";
 import { darkTheme, lightTheme } from "./styles/themes";
@@ -24,23 +25,34 @@ function App() {
   const [locale, setLocale] = useState<SupportedLocalesType>("ru");
   const [page, setPage] = useState<number>(1);
   const [seed, setSeed] = useState<string>("");
+  const [numberOfErrors, setNumberOfErrors] = useState<string>("");
+  const [sliderErrors, setSliderErrors] = useState<number>(0);
   const { ref, inView } = useInView();
 
   useEffect(() => {
-    console.log(inView);
     if (inView) {
       loadMoreTableItems();
     }
   }, [inView]);
 
   useEffect(() => {
+    if (sliderErrors > 0 && +numberOfErrors <= 1) {
+      setNumberOfErrors(`${sliderErrors}`);
+    }
+  }, [sliderErrors]);
+
+  useEffect(() => {
+    setSliderErrors(+numberOfErrors);
+  }, [numberOfErrors]);
+
+  useEffect(() => {
     setPage(1);
-    setTableData(generateTableData(locale, 1, seed));
-  }, [seed, locale]);
+    setTableData(generateTableData(locale, 1, seed, +numberOfErrors));
+  }, [seed, locale, numberOfErrors]);
 
   const loadMoreTableItems = () => {
     setTableData((prev) => {
-      let loadedTableData = generateTableData(locale, page + 1, seed);
+      let loadedTableData = generateTableData(locale, page + 1, seed, +numberOfErrors);
       if (JSON.stringify(prev) !== JSON.stringify(loadedTableData)) {
         setPage(page + 1);
         return [...prev, ...loadedTableData];
@@ -57,6 +69,9 @@ function App() {
   };
   const changeSeed = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSeed(e.target.value);
+  };
+  const changeErrors = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNumberOfErrors(e.target.value);
   };
 
   return (
@@ -81,12 +96,38 @@ function App() {
             })}
           </Select>
           <TextField
+            sx={{ mr: 2 }}
             id="outlined-basic"
             label="Seed"
             variant="outlined"
+            type="number"
             value={seed}
             onChange={changeSeed}
           />
+          <TextField
+            sx={{ mr: 2 }}
+            id="outlined-basic"
+            label="Errors"
+            variant="outlined"
+            type="number"
+            value={numberOfErrors}
+            onChange={changeErrors}
+          />
+          <Box sx={{ width: "150px", display: "inline-block" }}>
+            <Slider
+              aria-label="Errors"
+              defaultValue={0}
+              value={sliderErrors}
+              onChange={(e, value) => {
+                setSliderErrors(value as number);
+              }}
+              valueLabelDisplay="auto"
+              step={0.25}
+              marks
+              min={0}
+              max={1}
+            />
+          </Box>
         </Box>
         <Button onClick={loadMoreTableItems}>Load more</Button>
         <Box sx={{ py: 3 }}>
