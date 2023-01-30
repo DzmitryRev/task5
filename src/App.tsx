@@ -11,7 +11,6 @@ import {
   Slider,
   TextField,
 } from "@mui/material";
-import { darkTheme, lightTheme } from "./styles/themes";
 import Header from "./components/Header";
 import DenseTable from "./components/DenseTable";
 import { SupportedLocalesType, SUPPORTED_LOCALES } from "./const/locales";
@@ -20,7 +19,6 @@ import { ITableData } from "./models/TableDataModel";
 import { useInView } from "react-intersection-observer";
 
 function App() {
-  const [isDarkMode, setIsDarkMode] = useState(false);
   const [tableData, setTableData] = useState<ITableData[]>([]);
   const [locale, setLocale] = useState<SupportedLocalesType>("ru");
   const [page, setPage] = useState<number>(1);
@@ -61,9 +59,6 @@ function App() {
     });
   };
 
-  const changeTheme = () => {
-    setIsDarkMode((previousValue) => !previousValue);
-  };
   const changeLocale = (e: SelectChangeEvent<SupportedLocalesType>) => {
     setLocale(e.target.value as SupportedLocalesType);
   };
@@ -75,10 +70,10 @@ function App() {
   };
 
   return (
-    <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
+    <>
       <CssBaseline />
       <Box sx={{ maxWidth: "1000px", m: "0 auto", px: 2 }}>
-        <Header changeTheme={changeTheme} />
+        <Header />
         <Box sx={{ pt: 3 }}>
           <Select
             sx={{ mr: 2 }}
@@ -135,7 +130,7 @@ function App() {
           <Divider ref={ref} />
         </Box>
       </Box>
-    </ThemeProvider>
+    </>
   );
 }
 
